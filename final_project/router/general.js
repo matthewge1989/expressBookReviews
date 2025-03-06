@@ -37,8 +37,8 @@ public_users.get('/',function (req, res) {
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   const isbn = req.params.isbn;
-  let filtered_book = Object.values(books).filter((book) => book.isbn === isbn);
-  if (filtered_book.length > 0) {
+  let filtered_book = books[isbn];
+  if (filtered_book) {
     return res.status(200).json(filtered_book);
   }
     return res.status(404).json({ message: "No books found with this ISBN" });
@@ -67,14 +67,16 @@ public_users.get('/title/:title',function (req, res) {
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
     const isbn = req.params.isbn;
-    let filtered_book = Object.values(books).filter((book) => book.isbn === isbn);
-    if (filtered_book.length > 0) {
-      let filtered_book_review = filtered_book[0];
-    if(Object.keys(filtered_book_review.reviews).length > 0){
-        return res.status(200).json(filtered_book_review.reviews);
+    let filtered_book = books[isbn];
+    if (filtered_book) {
+        let reviews = filtered_book.reviews;
+        if (Object.keys(reviews).length > 0){
+            return res.status(200).json(reviews);
+        }else{
+            return res.status(404).json({ message: "No Reviews found with this ISBN" })};
     }else{
-        return res.status(404).json({ message: "No Reviews found with this ISBN" })
-    };}
-  });
+        return res.status(404).json({ message: "Input correct ISBN" });
+  };
+});
 
 module.exports.general = public_users;
